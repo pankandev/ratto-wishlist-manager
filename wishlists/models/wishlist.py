@@ -8,3 +8,5 @@ class Wishlist(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     emoji = models.CharField(max_length=1, null=True)
     color = models.CharField(max_length=6, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

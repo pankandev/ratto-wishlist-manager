@@ -3,10 +3,10 @@ from django.db import models
 from wishlists.models.wishlisted_product import WishlistedProduct
 
 
-class Currency(models.IntegerChoices):
-    EUR = 1, "EUR"
-    USD = 2, "USD"
-    CLP = 3, "CLP"
+class Currency(models.TextChoices):
+    EUR = "EUR"
+    USD = "USD"
+    CLP = "CLP"
 
 
 class ProductURL(models.Model):
@@ -18,7 +18,12 @@ class ProductURL(models.Model):
         related_name='urls'
     )
     last_price = models.IntegerField()
-    last_price_currency = models.PositiveSmallIntegerField(
+    last_price_currency = models.CharField(
         choices=Currency.choices,
         default=Currency.CLP
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.url_host}{self.url_path}"

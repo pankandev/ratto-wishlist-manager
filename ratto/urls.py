@@ -16,8 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView, SpectacularRedocView
+from rest_framework.routers import DefaultRouter
+
+from accounts.urls import accounts_router
+from wishlists.urls import wishlists_router, wishlists_nested_router
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls'))
+    path('api-auth/', include('rest_framework.urls')),
+
+    # API
+    path('api/v1/', include(wishlists_router.urls), name='wishlists'),
+    path('api/v1/', include(accounts_router.urls), name='accounts'),
+    path('api/v1/', include(wishlists_nested_router.urls), name='products'),
+
+    # Schema Docs (DRF Spectacular)
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
