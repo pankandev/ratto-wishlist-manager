@@ -6,3 +6,5 @@ from django.db import models
 class Wishlist(models.Model):
     display_name = models.CharField(max_length=255)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    emoji = models.CharField(max_length=1, null=True)
+    color = models.CharField(max_length=6, null=True)
