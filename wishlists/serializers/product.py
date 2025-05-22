@@ -10,6 +10,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = WishlistedProduct
         fields = [
+            'id',
             'display_name',
             'priority',
             'urls'
