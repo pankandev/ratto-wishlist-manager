@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 from django.contrib.messages import api
@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-1b3nv2qj%_d*!ak_k+5%yvqvz1yyfanj-%zl8y=^75vjy*=@m+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 # Application definition
 
@@ -119,7 +119,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_ROOT = 'static'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = ('static/frontend',)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -143,8 +145,24 @@ SPECTACULAR_SETTINGS = {
 
 DJANGO_VITE = {
     "default": {
-        "dev_mode": True,
-        "manifest_path": BASE_DIR / "manifest.json",
+        "dev_mode": DEBUG,
+        "manifest_path": Path(STATIC_ROOT) / "manifest.json",
         "dev_server_port": 3001,
+        "static_url_prefix": "",
+    }
+}
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
     }
 }
