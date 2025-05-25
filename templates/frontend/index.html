@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load django_vite %}
+
+{% block content %}
+    <noscript>
+        <p>This page requires JS</p>
+    </noscript>
+
+    <div id="root">
+    </div>
+
+    {% vite_react_refresh %}
+    {% vite_hmr_client %}
+    {% vite_asset 'src/main.tsx' %}
+
+{% endblock %}
