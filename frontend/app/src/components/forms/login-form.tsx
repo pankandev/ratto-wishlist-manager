@@ -7,6 +7,9 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from '..
 import {Input} from '../ui/input';
 import {Button} from "@/components/ui/button";
 import AuthForm from "@/components/cards/auth-form.tsx";
+import {NavLink, useNavigate} from "react-router";
+import {useAuth} from "@/providers/auth-provider.tsx";
+import {notifyError} from "@/lib/alert-helper.ts";
 
 const LoginFormSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -14,6 +17,8 @@ const LoginFormSchema = z.object({
 });
 
 const LoginForm = () => {
+    const auth = useAuth();
+    const navigate = useNavigate();
     const loginForm = useForm<z.infer<typeof LoginFormSchema>>({
         resolver: zodResolver(LoginFormSchema),
         defaultValues: {
@@ -22,8 +27,22 @@ const LoginForm = () => {
         },
     })
 
-    function onSubmit(data: z.infer<typeof LoginFormSchema>) {
-        console.log(data);
+    async function onSubmit(data: z.infer<typeof LoginFormSchema>): Promise<void> {
+        try {
+            const loggedIn = await auth.login({
+                email: data.email,
+                password: data.password
+            });
+            if (!loggedIn) {
+                notifyError('invalid-credentials');
+                return;
+            }
+        } catch (e) {
+            notifyError(e);
+            return;
+        }
+
+        navigate('/my-wishlists')
     }
 
     return (
@@ -49,7 +68,10 @@ const LoginForm = () => {
                         </FormItem>
                     )}/>
                     <div className="flex flex-col items-stretch mt-4">
-                        <Button type="submit">Login</Button>
+                        <Button disabled={!loginForm.formState.isValid} variant="default" type="submit">Login</Button>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <NavLink to="/auth/register" className="text-xs">Do not have an account?</NavLink>
                     </div>
                 </form>
             </Form>

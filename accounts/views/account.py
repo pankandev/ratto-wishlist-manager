@@ -10,4 +10,4 @@ class AccountViewSet(viewsets.ModelViewSet):
     """
     queryset = Account.objects.all().order_by('-date_joined')
     serializer_class = AccountSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = []

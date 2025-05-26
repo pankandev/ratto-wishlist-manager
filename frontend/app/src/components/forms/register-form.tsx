@@ -7,6 +7,9 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from '..
 import {Input} from '../ui/input';
 import {Button} from "@/components/ui/button";
 import AuthForm from "@/components/cards/auth-form.tsx";
+import {NavLink} from "react-router";
+import {useAuth} from "@/providers/auth-provider.tsx";
+import {notifyError} from "@/lib/alert-helper.ts";
 
 const RegisterFormSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -15,6 +18,7 @@ const RegisterFormSchema = z.object({
 });
 
 const RegisterForm = () => {
+    const auth = useAuth();
     const registerForm = useForm<z.infer<typeof RegisterFormSchema>>({
         resolver: zodResolver(RegisterFormSchema),
         defaultValues: {
@@ -23,8 +27,23 @@ const RegisterForm = () => {
         },
     })
 
-    function onSubmit(data: z.infer<typeof RegisterFormSchema>) {
-        console.log(data);
+    async function onSubmit(data: z.infer<typeof RegisterFormSchema>): Promise<void> {
+        if (data.password !== data.repeatPassword) {
+            registerForm.setError('repeatPassword', {
+                type: 'manual',
+                message: 'Passwords do not match',
+            });
+            return;
+        }
+
+        try {
+            await auth.register({
+                email: data.email,
+                password: data.password,
+            });
+        } catch (e) {
+            notifyError(e);
+        }
     }
 
     return (
@@ -59,7 +78,10 @@ const RegisterForm = () => {
                         </FormItem>
                     )}/>
                     <div className="flex flex-col items-stretch mt-4">
-                        <Button type="submit">Login</Button>
+                        <Button disabled={!registerForm.formState.isValid} type="submit">Create account</Button>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <NavLink to="/auth/login" className="text-xs">Already have an account?</NavLink>
                     </div>
                 </form>
             </Form>
