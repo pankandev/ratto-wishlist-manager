@@ -8,29 +8,30 @@ import {Input} from '../ui/input';
 import {Button} from "@/components/ui/button";
 import AuthForm from "@/components/cards/auth-form.tsx";
 
-const LoginFormSchema = z.object({
+const RegisterFormSchema = z.object({
     email: z.string().email('Invalid email address'),
     password: z.string().min(1, 'Password is required').min(6, 'Password must be at least 6 characters'),
+    repeatPassword: z.string().min(1, 'Required').min(6, 'Password must be at least 6 characters'),
 });
 
-const LoginForm = () => {
-    const loginForm = useForm<z.infer<typeof LoginFormSchema>>({
-        resolver: zodResolver(LoginFormSchema),
+const RegisterForm = () => {
+    const registerForm = useForm<z.infer<typeof RegisterFormSchema>>({
+        resolver: zodResolver(RegisterFormSchema),
         defaultValues: {
             email: "",
             password: "",
         },
     })
 
-    function onSubmit(data: z.infer<typeof LoginFormSchema>) {
+    function onSubmit(data: z.infer<typeof RegisterFormSchema>) {
         console.log(data);
     }
 
     return (
-        <AuthForm title="Log in">
-            <Form {...loginForm}>
-                <form onSubmit={loginForm.handleSubmit(onSubmit)} className="flex flex-col items-stretch gap-4">
-                    <FormField control={loginForm.control} name="email" render={({field}) => (
+        <AuthForm title="Register">
+            <Form {...registerForm}>
+                <form onSubmit={registerForm.handleSubmit(onSubmit)} className="flex flex-col items-stretch gap-4">
+                    <FormField control={registerForm.control} name="email" render={({field}) => (
                         <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
@@ -39,7 +40,16 @@ const LoginForm = () => {
                             <FormMessage/>
                         </FormItem>
                     )}/>
-                    <FormField control={loginForm.control} name="password" render={({field}) => (
+                    <FormField control={registerForm.control} name="password" render={({field}) => (
+                        <FormItem>
+                            <FormLabel>Password</FormLabel>
+                            <FormControl>
+                                <Input type="password" placeholder="••••••••••" {...field}></Input>
+                            </FormControl>
+                            <FormMessage/>
+                        </FormItem>
+                    )}/>
+                    <FormField control={registerForm.control} name="repeatPassword" render={({field}) => (
                         <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
@@ -57,4 +67,4 @@ const LoginForm = () => {
     );
 };
 
-export default LoginForm;
+export default RegisterForm;
