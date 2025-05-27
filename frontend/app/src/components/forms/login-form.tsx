@@ -42,7 +42,7 @@ const LoginForm = () => {
             return;
         }
 
-        navigate('/my-wishlists')
+        navigate('/');
     }
 
     return (

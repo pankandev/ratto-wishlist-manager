@@ -1,5 +1,4 @@
 import React, {createContext, useContext, useState} from 'react';
-import {redirect} from "react-router";
 import {callJsonApi} from "@/lib/http-helper.ts";
 import {z} from "zod";
 import {AppError} from "@/lib/app-error.ts";
@@ -10,7 +9,9 @@ export interface RegisterCredentials {
 }
 
 export interface AuthContextValue {
+    tokenSnapshot: string | null;
     getToken(): Promise<string | null>;
+    isLoggedInSnapshot: boolean;
     isLoggedIn(): Promise<boolean>;
     login(credentials: LoginCredentials): Promise<boolean>;
     register(credentials: RegisterCredentials): Promise<void>;
@@ -21,6 +22,8 @@ const StorageJWTAccessKey = 'django-jwt-access';
 const StorageJWTRefreshKey = 'django-jwt-refresh';
 const AuthContext = createContext<AuthContextValue>({
     getToken: () => Promise.resolve(null),
+    isLoggedInSnapshot: false,
+    tokenSnapshot: null,
     isLoggedIn: () => Promise.resolve(false),
     login: () => Promise.resolve(false),
     register: () => Promise.resolve(),
@@ -59,10 +62,10 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
             throw await AppError.fromResponse(response);
         }
         const parsed = LoginResponseSchema.parse(await response.json());
-        setToken(parsed.access);
         localStorage.setItem(StorageJWTAccessKey, parsed.access);
-        setRefreshToken(parsed.refresh);
         localStorage.setItem(StorageJWTRefreshKey, parsed.refresh);
+        setToken(parsed.access);
+        setRefreshToken(parsed.refresh);
         return true;
     }
     return (
@@ -71,6 +74,8 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
                 // TODO: Decode and refresh token if needed
                 return token;
             },
+            isLoggedInSnapshot: token !== null,
+            tokenSnapshot: token,
             async isLoggedIn(): Promise<boolean> {
                 return token !== null;
             },
@@ -95,9 +100,10 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
                 });
             },
             async logout(): Promise<void> {
-                setToken(null);
                 localStorage.removeItem(StorageJWTAccessKey);
-                redirect('/auth/login');
+                localStorage.removeItem(StorageJWTRefreshKey);
+                setToken(null);
+                setRefreshToken(null);
             },
         }}>
             {children}

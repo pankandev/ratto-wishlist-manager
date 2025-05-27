@@ -13,6 +13,7 @@ class WishlistedProduct(models.Model):
     wishlist = models.ForeignKey(
         Wishlist,
         on_delete=models.CASCADE,
+        related_name='products'
     )
     display_name = models.CharField(max_length=255)
     priority = models.IntegerField(

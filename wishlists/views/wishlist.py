@@ -7,7 +7,7 @@ from wishlists.serializers.wishlist import WishlistSerializer
 
 
 class WishlistView(viewsets.ModelViewSet):
-    queryset = Wishlist.objects.all().order_by('-created_at')
+    queryset = Wishlist.objects.all().prefetch_related('products').order_by('-created_at')
     serializer_class = WishlistSerializer
     permission_classes = [IsAuthenticated, WishlistIsCreatorOrReadOnlyMethod]
 
