@@ -17,9 +17,6 @@ wishlists_nested_router.register(
     WishlistedProductView,
     basename='wishlist-products'
 )
-wishlists_nested_router.register(
-    r'products',
-)
 
 
 urlpatterns = wishlists_router.urls

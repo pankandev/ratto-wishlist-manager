@@ -24,3 +24,4 @@ class ProductSerializer(serializers.ModelSerializer):
             ProductURL.objects.create(product=product, **url_data)
 
         return product
+
