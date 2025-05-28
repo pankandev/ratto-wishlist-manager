@@ -7,11 +7,18 @@ from wishlists.views.wishlist import WishlistView
 wishlists_router = routers.DefaultRouter()
 wishlists_router.register(r'wishlists', WishlistView)
 
-wishlists_nested_router = NestedSimpleRouter(wishlists_router, r'wishlists', lookup='wishlist')
+wishlists_nested_router = NestedSimpleRouter(
+    wishlists_router,
+    r'wishlists',
+    lookup='wishlist'
+)
 wishlists_nested_router.register(
     r'products',
     WishlistedProductView,
     basename='wishlist-products'
+)
+wishlists_nested_router.register(
+    r'products',
 )
 
 

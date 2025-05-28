@@ -17,13 +17,22 @@ class ProductURL(models.Model):
         on_delete=models.CASCADE,
         related_name='urls'
     )
-    last_price = models.IntegerField()
-    last_price_currency = models.CharField(
-        choices=Currency.choices,
-        default=Currency.CLP
-    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.url_host}{self.url_path}"
+
+
+class ProductPrice(models.Model):
+    amount = models.IntegerField()
+    currency = models.CharField(
+        choices=Currency.choices,
+        default=Currency.CLP
+    )
+
+    url = models.ForeignKey(
+        ProductURL,
+        on_delete=models.CASCADE,
+        related_name='prices',
+    )

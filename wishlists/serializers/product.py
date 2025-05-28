@@ -17,7 +17,6 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['wishlist']
 
-
     def create(self, validated_data):
         urls_data = validated_data.pop('urls', [])
         product = WishlistedProduct.objects.create(**validated_data)
