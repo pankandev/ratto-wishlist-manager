@@ -12,7 +12,7 @@ const MyWishlists = () => {
             <div className="flex flex-col items-stretch gap-2">
                 {wishlists.error && 'Something happened'}
                 {wishlists.isLoading && 'Loading...'}
-                {wishlists.data && wishlists.data.map(wishlist => <WishlistSlider key={wishlist.id} wishlist={wishlist}/>)}
+                {wishlists.data && wishlists.data.map(wishlist => <WishlistSlider key={wishlist.id} wishlist={wishlist} mutateWishlists={wishlists.mutate}/>)}
             </div>
         </div>
     );

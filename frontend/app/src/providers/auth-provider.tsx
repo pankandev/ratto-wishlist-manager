@@ -15,7 +15,7 @@ export interface RegisterCredentials {
 export interface AuthContextValue {
     tokenSnapshot: string | null;
 
-    getFreshToken: () => Promise<string | null>;
+    freshTokenGenerator: () => Promise<string | null>;
 
     isLoggedInSnapshot: boolean;
 
@@ -31,7 +31,7 @@ export interface AuthContextValue {
 const StorageJWTAccessKey = 'django-jwt-access';
 const StorageJWTRefreshKey = 'django-jwt-refresh';
 const AuthContext = createContext<AuthContextValue>({
-    getFreshToken: () => Promise.resolve(null),
+    freshTokenGenerator: () => Promise.resolve(null),
     isLoggedInSnapshot: false,
     tokenSnapshot: null,
     isLoggedIn: () => Promise.resolve(false),
@@ -111,7 +111,7 @@ const AuthProvider = ({children}: { children: React.ReactNode }) => {
 
     return (
         <AuthContext.Provider value={{
-            getFreshToken: async (): Promise<string | null> => {
+            freshTokenGenerator: async (): Promise<string | null> => {
                 if (token === null || refreshToken === null) {
                     return null;
                 }

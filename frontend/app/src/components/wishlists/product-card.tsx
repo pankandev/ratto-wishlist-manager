@@ -1,18 +1,34 @@
-import {Card, CardContent, CardFooter, CardTitle} from "@/components/ui/card.tsx";
-import type {Product} from "@/lib/wishlists.ts";
+import {deleteProduct, type Product} from "@/lib/wishlists.ts";
+import {X} from "lucide-react";
+import {useCallback} from "react";
+import {Button} from "@/components/ui/button.tsx";
+import {useAuth} from "@/providers/auth-provider.tsx";
 
-const ProductCard = ({product}: { product: Product }) => {
+const ProductCard = ({product, mutateProducts}: { product: Product, mutateProducts?: () => unknown}) => {
+    const auth = useAuth();
+    const deleteProductCallback = useCallback(async () => {
+        const authToken = await auth.freshTokenGenerator();
+        if (!authToken) {
+            return;
+        }
+        await deleteProduct(product.id, authToken);
+        mutateProducts?.()
+    }, [product]);
+
     return (
-        <Card className="min-w-[200px] flex flex-col items-stretch overflow-x-hidden">
-            <CardContent className="grow">
-                {product.display_name}
-            </CardContent>
-            <CardFooter>
-                <CardTitle>
+        <div className="flex flex-col min-w-[200px] items-stretch bg-card border border-sidebar-border rounded-md">
+            <div className="flex flex-row justify-end items-center py-2 px-3">
+                <Button variant="ghost" onClick={deleteProductCallback}>
+                    <X></X>
+                </Button>
+            </div>
+            <div className="grow bg-black"/>
+            <div className="flex flex-col items-stretch py-4 px-3">
+                <span className="font-bold">
                     {product.display_name}
-                </CardTitle>
-            </CardFooter>
-        </Card>
+                </span>
+            </div>
+        </div>
     );
 };
 

@@ -1,5 +1,5 @@
 import useSWR, {type SWRResponse} from "swr";
-import {getJsonFetcher, getListSchema} from "@/lib/http-helper.ts";
+import {callJsonApi, getJsonFetcher, getListSchema} from "@/lib/http-helper.ts";
 import {useAuth} from "@/providers/auth-provider.tsx";
 import {z} from "zod";
 
@@ -23,6 +23,9 @@ export interface Wishlist {
     products: Product[];
 }
 
+
+export type AuthTokenGenerator = () => Promise<string | null>;
+
 const WishlistSchema: z.ZodSchema<Wishlist, z.ZodTypeDef, unknown> = z.object({
     id: z.number(),
     display_name: z.string(),
@@ -34,5 +37,20 @@ const WishlistSchema: z.ZodSchema<Wishlist, z.ZodTypeDef, unknown> = z.object({
 export function useWishlists(): SWRResponse<Wishlist[]> {
     const auth = useAuth();
     const url = '/api/v1/wishlists/';
-    return useSWR(url, getJsonFetcher(getListSchema(WishlistSchema), auth.getFreshToken));
+    return useSWR(url, getJsonFetcher(getListSchema(WishlistSchema), auth.freshTokenGenerator));
+}
+
+export async function deleteWishlist(wishlistId: number, authToken: string): Promise<void> {
+    await callJsonApi({
+        method: 'DELETE',
+        path: `/api/v1/wishlists/${wishlistId}/`,
+        authToken,
+    });
+}
+export async function deleteProduct(productId: number, authToken: string): Promise<void> {
+    await callJsonApi({
+        method: 'DELETE',
+        path: `/api/v1/products/${productId}/`,
+        authToken,
+    });
 }
