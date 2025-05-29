@@ -31,7 +31,15 @@ def _parse_decimal_string(s: str, decimal_separator: str = '.') -> tuple[str, st
 
 class ParsedPrice(BaseModel):
     currency: str
+    """
+    The price currency (e.g. USD, CLP, etc.)
+    """
     amount: int
+    """
+    The amount of the price as an integer. In case of USD amounts which include cents, this should
+    be the integer form of the amount. The amount of "decimals" to store is defined by the CURRENCY_DECIMALS dictionary.
+    e.g. USD 12.34 -> 1234, USD 12 -> 1200, CLP 1234 -> 1234
+    """
 
     @staticmethod
     def _get_amount_as_integer(
@@ -94,11 +102,28 @@ class ParsedPrice(BaseModel):
 
 
 class ParsedProduct(BaseModel):
+    """
+    The scraped information of a product, as extracted from a site.
+    """
+
     name: str
+    """
+    The name of the product. This is the only required field.
+    """
+
     description: str | None = None
+    """
+    The description of the product
+    """
     image_url: str | None = None
+    """
+    The image URL
+    """
 
     prices: list[ParsedPrice] = Field(default_factory=list)
+    """
+    A list of the product available prices.
+    """
 
     @staticmethod
     def merge(products: typing.Sequence['ParsedProduct']) -> typing.Optional['ParsedProduct']:
