@@ -68,3 +68,17 @@ export async function createProductFromUrl(wishlistId: number, url: string, auth
         throw response;
     }
 }
+
+export async function createWishlist(displayName: string, authToken: string): Promise<void> {
+    const response = await callJsonApi({
+        method: 'POST',
+        path: '/api/v1/wishlists/',
+        authToken,
+        body: {
+            display_name: displayName,
+        }
+    });
+    if (!response.ok) {
+        throw response;
+    }
+}

@@ -27,7 +27,7 @@ const WishlistSlider = ({wishlist, mutateWishlists}: { wishlist: Wishlist, mutat
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
             <div className="flex flex-col items-stretch gap-2">
                 <div className="flex flex-row justify-between">
-                    <h3 className="text-lg font-bold">{wishlist.display_name} ({openDialog ? 'T' : 'F'})</h3>
+                    <h3 className="text-lg font-bold">{wishlist.display_name}</h3>
                     <Button variant="ghost" onClick={deleteWishlistCallback}>
                         <X></X>
                     </Button>
