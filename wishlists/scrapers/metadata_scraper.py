@@ -60,6 +60,9 @@ def get_metadata(soup: BeautifulSoup) -> ParsedProduct | None:
         meta
     )
 
+    if name is None:
+        return None
+
     return ParsedProduct(
         name=name,
         description=description,

@@ -54,3 +54,17 @@ export async function deleteProduct(productId: number, authToken: string): Promi
         authToken,
     });
 }
+
+export async function createProductFromUrl(wishlistId: number, url: string, authToken: string): Promise<void> {
+    const response = await callJsonApi({
+        method: 'POST',
+        path: `/api/v1/wishlists/${wishlistId}/products/from-url/`,
+        authToken,
+        body: {
+            url,
+        }
+    });
+    if (!response.ok) {
+        throw response;
+    }
+}

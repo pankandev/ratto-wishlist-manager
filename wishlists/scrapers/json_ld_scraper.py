@@ -35,7 +35,6 @@ def get_json_ld(soup: BeautifulSoup) -> ParsedProduct | None:
     try:
         product_ld = ProductLD.model_validate(merged)
     except ValidationError as e:
-        logging.exception(e)
         return None
 
     return product_ld.to_parsed()

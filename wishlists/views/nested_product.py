@@ -60,7 +60,8 @@ class NestedWishlistedProductView(viewsets.ModelViewSet):
 
         # scrape url
         scraper = cloudscraper.create_scraper()
-        scraped_product = extract_product(scraper, input_serializer.url.__str__())
+        url = input_serializer.data['url']
+        scraped_product = extract_product(scraper, url)
 
         if scraped_product is None:
             return Response(
@@ -78,7 +79,7 @@ class NestedWishlistedProductView(viewsets.ModelViewSet):
                 display_name=scraped_product.name,
             )
 
-            url = split_url_host_path(input_serializer.url.__str__())
+            url = split_url_host_path(url)
             assert url is not None, f'Received invalid url: {url}'
 
             product_url = ProductURL.objects.create(

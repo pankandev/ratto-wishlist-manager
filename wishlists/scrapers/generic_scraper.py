@@ -33,7 +33,7 @@ def extract_product(scraper: CloudScraper, url: str) -> ParsedProduct | None:
     :return: The {ParsedProduct} object
     """
     html_text = scraper.get(url).text
-    soup = BeautifulSoup(html_text)
+    soup = BeautifulSoup(html_text, features='html.parser')
 
     products = [
         get_json_ld(soup),
