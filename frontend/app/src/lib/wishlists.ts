@@ -3,13 +3,33 @@ import {callJsonApi, getJsonFetcher, getListSchema} from "@/lib/http-helper.ts";
 import {useAuth} from "@/providers/auth-provider.tsx";
 import {z} from "zod";
 
+export interface ProductPrice {
+    currency: string;
+    amount: number;
+}
+
+export const ProductPriceSchema: z.ZodSchema<ProductPrice, z.ZodTypeDef, unknown> = z.object({
+    currency: z.string(),
+    amount: z.number(),
+});
+
 export interface ProductURL {
     url: string;
     product_id: number;
     name: string;
     description: string | null;
     image_url: string | null;
+    prices: ProductPrice[];
 }
+
+export const ProductURLSchema: z.ZodSchema<ProductURL, z.ZodTypeDef, unknown> = z.object({
+    url: z.string(),
+    product_id: z.number(),
+    name: z.string(),
+    description: z.string().nullable(),
+    image_url: z.string().nullable(),
+    prices: z.array(ProductPriceSchema),
+});
 
 export interface Product {
     display_name: string;
@@ -17,6 +37,7 @@ export interface Product {
     image_url: string | null;
     id: number;
     priority: number | null;
+    urls: ProductURL[];
 }
 
 const ProductSchema: z.ZodSchema<Product, z.ZodTypeDef, unknown> = z.object({
@@ -25,6 +46,7 @@ const ProductSchema: z.ZodSchema<Product, z.ZodTypeDef, unknown> = z.object({
     image_url: z.string().nullable(),
     id: z.number(),
     priority: z.number().nullable(),
+    urls: z.array(ProductURLSchema),
 });
 
 export interface Wishlist {
@@ -59,6 +81,7 @@ export async function deleteWishlist(wishlistId: number, authToken: string): Pro
         authToken,
     });
 }
+
 export async function deleteProduct(productId: number, authToken: string): Promise<void> {
     await callJsonApi({
         method: 'DELETE',
