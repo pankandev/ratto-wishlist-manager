@@ -3,7 +3,7 @@ from typing import Sequence
 from bs4 import BeautifulSoup
 from pydantic import BaseModel, Field
 
-from wishlists.scrapers.generic_parsed_product import ParsedProduct
+from wishlists.scrapers.generic_parsed_product import ParsedProduct, ParsedPrice
 
 
 class MetadataProduct(BaseModel):
@@ -47,7 +47,11 @@ def get_metadata(soup: BeautifulSoup) -> ParsedProduct | None:
         ('og:title', 'title',),
         meta
     )
-    price = get_first_value_from_metadata_dict(
+    image_url = get_first_value_from_metadata_dict(
+        ('og:image',),
+        meta
+    )
+    price_amount = get_first_value_from_metadata_dict(
         ('product:price:amount', ),
         meta
     )
@@ -63,7 +67,16 @@ def get_metadata(soup: BeautifulSoup) -> ParsedProduct | None:
     if name is None:
         return None
 
+    price: ParsedPrice | None = None
+    if price_amount is not None and currency is not None:
+        price = ParsedPrice.from_string_amount(
+            price_amount,
+            currency,
+        )
+
     return ParsedProduct(
         name=name,
         description=description,
+        image_url=image_url,
+        prices=[price] if price is not None else []
     )

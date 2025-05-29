@@ -1,3 +1,4 @@
+import json
 import re
 import typing
 
@@ -109,5 +110,5 @@ class ParsedProduct(BaseModel):
         for other in products[1:]:
             product.description = product.description or other.description
             product.image_url = product.image_url or other.image_url
-            product.prices = product.prices or other.prices
+            product.prices = product.prices if len(product.prices) > 0 else other.prices
         return product
