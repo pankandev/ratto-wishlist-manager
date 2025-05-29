@@ -13,6 +13,7 @@ _SCRAPER_REGISTRY: ScraperRegistry | None = None
 
 def discover_scrapers_by_domain(force_discover: bool = False,
                                 custom_scrapers_module: str = 'custom_scrapers') -> ScraperRegistry:
+    global _SCRAPER_REGISTRY
     if not force_discover and _SCRAPER_REGISTRY is not None:
         return _SCRAPER_REGISTRY
 
@@ -44,6 +45,7 @@ def discover_scrapers_by_domain(force_discover: bool = False,
                 registry[domain] = previous_scrapers
 
     print(f"Found {scraper_count} scraper(s)")
+    _SCRAPER_REGISTRY = registry
 
     return registry
 

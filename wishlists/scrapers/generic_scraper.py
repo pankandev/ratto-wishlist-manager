@@ -54,6 +54,8 @@ def extract_product(cloudscraper: CloudScraper, url: str) -> ParsedProduct | Non
         get_metadata(soup),
     ]
     product = ParsedProduct.merge([p for p in products if p is not None])
+    if product is None:
+        return None
     if product.name is None:
         product.name = url
 

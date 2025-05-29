@@ -39,7 +39,7 @@ class ParsedPrice(BaseModel):
     be the integer form of the amount. The amount of "decimals" to store is defined by the CURRENCY_DECIMALS dictionary.
     e.g. USD 12.34 -> 1234, USD 12 -> 1200, CLP 1234 -> 1234
     """
-    comment: str | None
+    comment: str | None = None
     """
     Comment about this price. e.g. If paid with a specific card, if it is for some specific segment of clients, or
     anything about this specific price the user should know about.
@@ -85,7 +85,8 @@ class ParsedPrice(BaseModel):
         return total
 
     @staticmethod
-    def from_string_amount(amount_str: str, currency: str, price_comment: str | None = None) -> typing.Optional['ParsedPrice']:
+    def from_string_amount(amount_str: str, currency: str, price_comment: str | None = None) -> typing.Optional[
+        'ParsedPrice']:
         """
         Parses an amount of money as the type of currency.
         :param amount_str: The amount as a string
@@ -105,6 +106,18 @@ class ParsedPrice(BaseModel):
             currency=currency,
             comment=price_comment
         )
+
+    def to_display_string(self, decimal_separator: str = '.', thousands_separator: str = ',') -> str:
+        n_decimals = CURRENCY_DECIMALS.get(self.currency, 0)
+        if n_decimals == 0:
+            return f"{self.amount:{thousands_separator}}"
+        amount_str = str(self.amount)
+        if len(amount_str) < n_decimals:
+            raise ValueError(f'Invalid amount {self.amount} for currrency {self.currency}')
+
+        decimal_part = amount_str[-n_decimals:]
+        integer_part = f"{int(amount_str[:n_decimals]):{thousands_separator}}"
+        return f'{decimal_part}{decimal_separator}{integer_part}'
 
 
 class ParsedProduct(BaseModel):

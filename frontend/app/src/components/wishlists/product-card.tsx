@@ -40,7 +40,7 @@ const ProductCard = ({product, mutateProducts}: { product: Product, mutateProduc
                     <span className="font-bold text-x max-w-[170px] text-xs">
                         {product.display_name}
                     </span>
-                        {minPrice && <span className="font-bold">{minPrice.amount} {minPrice.currency}</span>}
+                        {minPrice && <span className="font-bold">{minPrice.display_amount} {minPrice.currency}</span>}
                     </div>
                     {firstUrl &&
                         <Button variant="ghost" size='sm' asChild>

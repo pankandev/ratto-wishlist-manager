@@ -31,7 +31,7 @@ def get_json_ld(soup: BeautifulSoup) -> ParsedProduct | None:
     for product in product_jsons:
         merged.update(product)
 
-    if len(product_jsons) == -1:
+    if len(product_jsons) == 0:
         return None
     try:
         product_ld = ProductLD.model_validate(merged)

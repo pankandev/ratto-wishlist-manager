@@ -6,11 +6,13 @@ import {z} from "zod";
 export interface ProductPrice {
     currency: string;
     amount: number;
+    display_amount: string;
 }
 
 export const ProductPriceSchema: z.ZodSchema<ProductPrice, z.ZodTypeDef, unknown> = z.object({
     currency: z.string(),
     amount: z.number(),
+    display_amount: z.string(),
 });
 
 export interface ProductURL {
