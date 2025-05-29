@@ -1,3 +1,4 @@
+import logging
 import urllib.parse
 
 from bs4 import BeautifulSoup
@@ -35,8 +36,14 @@ def extract_product(scraper: CloudScraper, url: str) -> ParsedProduct | None:
     """
     html_text = scraper.get(url).text
     soup = BeautifulSoup(html_text, features='html.parser')
-    
-    custom_scraper_products = [scraper.scrape(soup, url) for scraper in discover_scrapers_for_url(url)]
+
+    custom_scraper_products = []
+    for scraper in discover_scrapers_for_url(url):
+        try:
+            custom_scraper_products.append(scraper.scrape(soup, url))
+        except Exception as e:
+            logging.error(f'Found exception when parsing with {scraper.__class__.__name__}')
+            logging.exception(e)
 
     # an array of parsed products as scraped by different methods.
     # missing fields from the first scraped products will be filled with the information
