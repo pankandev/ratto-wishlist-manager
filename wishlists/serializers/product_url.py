@@ -24,14 +24,11 @@ class ComposedURLField(serializers.Field):
 
 
 class ProductURLSerializer(serializers.ModelSerializer):
-    last_price_currency = serializers.ChoiceField(choices=Currency)
     url = ComposedURLField()
-    a = serializers.SerializerMethodField
 
     class Meta:
         model = ProductURL
         fields = [
-            'last_price',
-            'last_price_currency',
-            'url'
+            'url',
+            'product_id'
         ]

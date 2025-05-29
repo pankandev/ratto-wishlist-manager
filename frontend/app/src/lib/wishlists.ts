@@ -34,5 +34,5 @@ const WishlistSchema: z.ZodSchema<Wishlist, z.ZodTypeDef, unknown> = z.object({
 export function useWishlists(): SWRResponse<Wishlist[]> {
     const auth = useAuth();
     const url = '/api/v1/wishlists/';
-    return useSWR(url, getJsonFetcher(getListSchema(WishlistSchema), auth.tokenSnapshot));
+    return useSWR(url, getJsonFetcher(getListSchema(WishlistSchema), auth.getFreshToken));
 }

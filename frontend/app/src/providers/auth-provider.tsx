@@ -1,7 +1,11 @@
-import React, {createContext, useContext, useState} from 'react';
+import React, {createContext, useCallback, useContext, useState} from 'react';
 import {callJsonApi} from "@/lib/http-helper.ts";
 import {z} from "zod";
 import {AppError} from "@/lib/app-error.ts";
+import {jwtDecode} from "jwt-decode";
+
+
+const refreshTimeSec: number = 10 * 60;
 
 export interface RegisterCredentials {
     email: string;
@@ -10,18 +14,24 @@ export interface RegisterCredentials {
 
 export interface AuthContextValue {
     tokenSnapshot: string | null;
-    getToken(): Promise<string | null>;
+
+    getFreshToken: () => Promise<string | null>;
+
     isLoggedInSnapshot: boolean;
+
     isLoggedIn(): Promise<boolean>;
+
     login(credentials: LoginCredentials): Promise<boolean>;
+
     register(credentials: RegisterCredentials): Promise<void>;
+
     logout(): void;
 }
 
 const StorageJWTAccessKey = 'django-jwt-access';
 const StorageJWTRefreshKey = 'django-jwt-refresh';
 const AuthContext = createContext<AuthContextValue>({
-    getToken: () => Promise.resolve(null),
+    getFreshToken: () => Promise.resolve(null),
     isLoggedInSnapshot: false,
     tokenSnapshot: null,
     isLoggedIn: () => Promise.resolve(false),
@@ -36,15 +46,18 @@ export interface LoginCredentials {
     password: string;
 }
 
+export const TokenRefreshResponseSchema = z.object({
+    access: z.string(),
+});
 
 export const LoginResponseSchema = z.object({
     access: z.string(),
     refresh: z.string(),
 });
 
-const AuthProvider = ({children}: {children: React.ReactNode}) => {
+const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const [token, setToken] = useState<string | null>(localStorage.getItem(StorageJWTAccessKey) || null);
-    const [, setRefreshToken] = useState<string | null>(localStorage.getItem(StorageJWTRefreshKey) || null);
+    const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem(StorageJWTRefreshKey) || null);
 
     async function login(credentials: LoginCredentials): Promise<boolean> {
         const response = await callJsonApi({
@@ -68,11 +81,41 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
         setRefreshToken(parsed.refresh);
         return true;
     }
+
+    const getUpdatedToken = useCallback(async (
+        token: string,
+        refreshToken: string
+    ): Promise<string> => {
+        const decoded = jwtDecode(token);
+        const isExpired = decoded.exp !== undefined && (Date.now() / 1000) > decoded.exp - refreshTimeSec;
+        if (isExpired) {
+            const response = await callJsonApi({
+                path: '/api/token/refresh/',
+                method: 'POST',
+                body: {
+                    refresh: refreshToken
+                }
+            });
+            if (!response.ok) {
+                throw new Error(response.statusText)
+            }
+            const bodyJson: unknown = await response.json();
+            const body = TokenRefreshResponseSchema.parse(bodyJson);
+            setToken(body.access);
+            localStorage.setItem(StorageJWTAccessKey, body.access);
+            return body.access;
+        }
+
+        return token;
+    }, [setToken]);
+
     return (
         <AuthContext.Provider value={{
-            async getToken(): Promise<string | null> {
-                // TODO: Decode and refresh token if needed
-                return token;
+            getFreshToken: async (): Promise<string | null> => {
+                if (token === null || refreshToken === null) {
+                    return null;
+                }
+                return getUpdatedToken(token, refreshToken);
             },
             isLoggedInSnapshot: token !== null,
             tokenSnapshot: token,

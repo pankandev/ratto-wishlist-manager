@@ -37,13 +37,20 @@ export function getListSchema<T>(schema: z.ZodSchema<T, z.ZodTypeDef, unknown>):
 
 export function getJsonFetcher<T>(
     responseSchema: z.ZodSchema<T, z.ZodTypeDef, unknown>,
-    authToken?: string | null,
+    authTokenGenerator?: () => Promise<string | null>,
 ): (url: string) => Promise<T> {
     return async (url: string) => {
+        let authToken: string | null = null;
+        if (authTokenGenerator !== undefined) {
+            authToken = await authTokenGenerator();
+        }
         const response = await fetch(url, {
             method: 'GET',
             headers: getAuthorizedJSONHeaders(authToken ?? undefined, undefined),
         });
+        if (!response.ok) {
+            throw response;
+        }
         return responseSchema.parse(await response.json())
     };
 }
