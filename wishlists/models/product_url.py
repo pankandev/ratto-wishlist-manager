@@ -17,6 +17,9 @@ class ProductURL(models.Model):
         on_delete=models.CASCADE,
         related_name='urls'
     )
+    name = models.CharField(null=False)
+    description = models.CharField(null=True)
+    image_url = models.URLField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

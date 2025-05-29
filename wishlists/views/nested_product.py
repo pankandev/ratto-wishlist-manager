@@ -77,6 +77,8 @@ class NestedWishlistedProductView(viewsets.ModelViewSet):
             product = WishlistedProduct.objects.create(
                 wishlist=wishlist,
                 display_name=scraped_product.name,
+                description=scraped_product.description,
+                image_url=scraped_product.image_url
             )
 
             url = split_url_host_path(url)
@@ -86,6 +88,9 @@ class NestedWishlistedProductView(viewsets.ModelViewSet):
                 url_host=url[0],
                 url_path=url[1],
                 product=product,
+                name=scraped_product.name,
+                description=scraped_product.description,
+                image_url=scraped_product.image_url
             )
 
             for price in scraped_product.prices:

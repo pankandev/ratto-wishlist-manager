@@ -22,7 +22,7 @@ const ProductCard = ({product, mutateProducts}: { product: Product, mutateProduc
                     <X></X>
                 </Button>
             </div>
-            <div className="grow bg-black"/>
+            <div className="grow bg-black bg-cover bg-center" style={product.image_url ? {'background-image': 'url(\"' + product.image_url + '\")'} : {}}/>
             <div className="flex flex-col items-stretch py-4 px-3">
                 <span className="font-bold text-x max-w-[170px] text-xs">
                     {product.display_name}

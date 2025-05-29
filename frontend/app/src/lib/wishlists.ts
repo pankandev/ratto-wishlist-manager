@@ -3,14 +3,26 @@ import {callJsonApi, getJsonFetcher, getListSchema} from "@/lib/http-helper.ts";
 import {useAuth} from "@/providers/auth-provider.tsx";
 import {z} from "zod";
 
+export interface ProductURL {
+    url: string;
+    product_id: number;
+    name: string;
+    description: string | null;
+    image_url: string | null;
+}
+
 export interface Product {
     display_name: string;
+    description: string | null;
+    image_url: string | null;
     id: number;
     priority: number | null;
 }
 
 const ProductSchema: z.ZodSchema<Product, z.ZodTypeDef, unknown> = z.object({
     display_name: z.string(),
+    description: z.string().nullable(),
+    image_url: z.string().nullable(),
     id: z.number(),
     priority: z.number().nullable(),
 });

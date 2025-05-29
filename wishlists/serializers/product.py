@@ -12,6 +12,8 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'display_name',
+            'description',
+            'image_url',
             'priority',
             'urls'
         ]

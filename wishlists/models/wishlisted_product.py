@@ -16,6 +16,8 @@ class WishlistedProduct(models.Model):
         related_name='products'
     )
     display_name = models.CharField(max_length=255)
+    description = models.CharField(null=True)
+    image_url = models.URLField(null=True)
     priority = models.IntegerField(
         choices=WishlistedProductPriority.choices,
         null=True

@@ -2,7 +2,7 @@ import {deleteWishlist, type Wishlist} from "@/lib/wishlists.ts";
 import ProductCard from "@/components/wishlists/product-card.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {useCallback, useState} from "react";
-import {X} from "lucide-react";
+import {Plus, X} from "lucide-react";
 import {useAuth} from "@/providers/auth-provider.tsx";
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog.tsx";
 import CreateProductForm from "@/components/forms/create-product-form.tsx";
@@ -42,6 +42,15 @@ const WishlistSlider = ({wishlist, mutateWishlists}: { wishlist: Wishlist, mutat
                                 <Button variant="link">Add a product</Button>
                             </DialogTrigger>
                         </div>
+                    )}
+                    {wishlist.products.length > 0 && (
+                        <DialogTrigger asChild>
+                            <button
+                                className="flex flex-col justify-center gap-2 items-center min-w-[200px] bg-card/50 border border-sidebar-border rounded-md hover:bg-card cursor-pointer">
+                                <Plus></Plus>
+                                <span className="text-xs">Add product</span>
+                            </button>
+                        </DialogTrigger>
                     )}
                 </div>
             </div>
