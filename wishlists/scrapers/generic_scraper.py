@@ -3,6 +3,7 @@ import urllib.parse
 from bs4 import BeautifulSoup
 from cloudscraper import CloudScraper
 
+from wishlists.scrapers.discover_scrapers import discover_scrapers_for_url
 from wishlists.scrapers.generic_parsed_product import ParsedProduct
 from wishlists.scrapers.json_ld_scraper import get_json_ld
 from wishlists.scrapers.metadata_scraper import get_metadata
@@ -34,8 +35,12 @@ def extract_product(scraper: CloudScraper, url: str) -> ParsedProduct | None:
     """
     html_text = scraper.get(url).text
     soup = BeautifulSoup(html_text, features='html.parser')
+    
+    custom_scraper_products = [scraper.scrape(soup, url) for scraper in discover_scrapers_for_url(url)]
 
-    products = [
+
+    products: list[ParsedProduct | None] = [
+        *custom_scraper_products,
         get_json_ld(soup),
         get_metadata(soup),
     ]
