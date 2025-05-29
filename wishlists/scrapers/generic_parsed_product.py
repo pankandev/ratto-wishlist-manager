@@ -1,4 +1,3 @@
-import json
 import re
 import typing
 
@@ -39,6 +38,11 @@ class ParsedPrice(BaseModel):
     The amount of the price as an integer. In case of USD amounts which include cents, this should
     be the integer form of the amount. The amount of "decimals" to store is defined by the CURRENCY_DECIMALS dictionary.
     e.g. USD 12.34 -> 1234, USD 12 -> 1200, CLP 1234 -> 1234
+    """
+    comment: str | None
+    """
+    Comment about this price. e.g. If paid with a specific card, if it is for some specific segment of clients, or
+    anything about this specific price the user should know about.
     """
 
     @staticmethod
@@ -81,11 +85,12 @@ class ParsedPrice(BaseModel):
         return total
 
     @staticmethod
-    def from_string_amount(amount_str: str, currency: str) -> typing.Optional['ParsedPrice']:
+    def from_string_amount(amount_str: str, currency: str, price_comment: str | None = None) -> typing.Optional['ParsedPrice']:
         """
         Parses an amount of money as the type of currency.
         :param amount_str: The amount as a string
         :param currency: The currency to parse from
+        :param price_comment The price comment. See ParsedPrice.comment
 
         :return: The parsed price
         """
@@ -97,7 +102,8 @@ class ParsedPrice(BaseModel):
             return None
         return ParsedPrice(
             amount=amount,
-            currency=currency
+            currency=currency,
+            comment=price_comment
         )
 
 
@@ -106,9 +112,9 @@ class ParsedProduct(BaseModel):
     The scraped information of a product, as extracted from a site.
     """
 
-    name: str
+    name: str | None = None
     """
-    The name of the product. This is the only required field.
+    The name of the product.
     """
 
     description: str | None = None
@@ -133,6 +139,7 @@ class ParsedProduct(BaseModel):
             return products[0]
         product = products[0]
         for other in products[1:]:
+            product.name = product.name or other.name
             product.description = product.description or other.description
             product.image_url = product.image_url or other.image_url
             product.prices = product.prices if len(product.prices) > 0 else other.prices

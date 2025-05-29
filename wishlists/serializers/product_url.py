@@ -27,7 +27,8 @@ class ProductPriceSerializer(serializers.ModelSerializer):
         model = ProductPrice
         fields = [
             'currency',
-            'amount'
+            'amount',
+            'comment',
         ]
 
 

@@ -97,7 +97,8 @@ class NestedWishlistedProductView(viewsets.ModelViewSet):
                 ProductPrice.objects.create(
                     amount=price.amount,
                     currency=price.currency,
-                    url=product_url
+                    url=product_url,
+                    comment=price.comment
                 )
 
         return Response(

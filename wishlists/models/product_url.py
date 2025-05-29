@@ -33,6 +33,9 @@ class ProductPrice(models.Model):
         choices=Currency.choices,
         default=Currency.CLP
     )
+    comment = models.CharField(
+        null=True
+    )
 
     url = models.ForeignKey(
         ProductURL,

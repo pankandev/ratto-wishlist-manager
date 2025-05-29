@@ -2,6 +2,7 @@ import json
 import logging
 
 from bs4 import BeautifulSoup
+from django.db.models.signals import pre_init
 from pydantic import ValidationError
 
 from wishlists.scrapers.generic_parsed_product import ParsedProduct
@@ -35,6 +36,7 @@ def get_json_ld(soup: BeautifulSoup) -> ParsedProduct | None:
     try:
         product_ld = ProductLD.model_validate(merged)
     except ValidationError as e:
+        logging.exception(e)
         return None
 
     return product_ld.to_parsed()

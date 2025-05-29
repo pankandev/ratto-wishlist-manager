@@ -27,14 +27,14 @@ def split_url_host_path(url: str) -> tuple[str, str] | None:
     )
 
 
-def extract_product(scraper: CloudScraper, url: str) -> ParsedProduct | None:
+def extract_product(cloudscraper: CloudScraper, url: str) -> ParsedProduct | None:
     """
     Attempts to find the product information from a URL.
-    :param scraper: The CloudScraper instance to use to get the information.
+    :param cloudscraper: The CloudScraper instance to use to get the information.
     :param url: The URL to scrape
     :return: The ParsedProduct object
     """
-    html_text = scraper.get(url).text
+    html_text = cloudscraper.get(url).text
     soup = BeautifulSoup(html_text, features='html.parser')
 
     custom_scraper_products = []
@@ -53,4 +53,8 @@ def extract_product(scraper: CloudScraper, url: str) -> ParsedProduct | None:
         get_json_ld(soup),
         get_metadata(soup),
     ]
-    return ParsedProduct.merge([p for p in products if p is not None])
+    product = ParsedProduct.merge([p for p in products if p is not None])
+    if product.name is None:
+        product.name = url
+
+    return product

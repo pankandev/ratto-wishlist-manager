@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import List, Optional, Literal, Union
 
 from pydantic import BaseModel, HttpUrl, Field, AnyUrl
@@ -64,13 +64,15 @@ class MerchantReturnPolicy(BaseModel):
     returnFees: HttpUrl
 
 
+
+
 class Offer(BaseModel):
     type: Literal["Offer"] = Field(alias="@type")
     price: Union[int, str]
     priceCurrency: str
     availability: HttpUrl
     url: Optional[HttpUrl] = None
-    priceValidUntil: Optional[date] = None
+    priceValidUntil: Optional[datetime | date] = None
     shippingDetails: Optional[OfferShippingDetails] = None
     hasMerchantReturnPolicy: Optional[MerchantReturnPolicy] = None
     sku: Optional[str] = None
@@ -82,6 +84,16 @@ class Offer(BaseModel):
             self.priceCurrency,
         )
 
+class AggregateOffer(BaseModel):
+    type: Literal["AggregateOffer"] = Field(alias="@type")
+    lowPrice: int
+    highPrice: int
+    priceCurrency: str
+    offers: list[Offer]
+    offerCount: int
+
+    def to_prices(self) -> list[ParsedPrice]:
+        return [offer.to_price() for offer in self.offers]
 
 class ReviewRating(BaseModel):
     bestRating: int
@@ -111,12 +123,18 @@ class ProductLD(BaseModel):
     image: Union[HttpUrl, List[HttpUrl]]
     brand: Union[str, Brand]
     sku: str
-    offers: Union[Offer, List[Offer]]
+    offers: Union[Offer, List[Offer], AggregateOffer]
     review: Optional[List[Review]] = None
     aggregateRating: Optional[AggregateRating] = None
     itemCondition: Optional[HttpUrl] = None
     productID: Optional[str] = None
     description: Optional[str] = None
+
+    @property
+    def prices(self) -> list[ParsedPrice]:
+        if isinstance(self.offers, AggregateOffer):
+            return self.offers.to_prices()
+        return [offer.to_price() for offer in to_list(self.offers)]
 
     def to_parsed(self) -> ParsedProduct:
         image_urls: list[HttpUrl] = to_list(self.image)
@@ -125,8 +143,5 @@ class ProductLD(BaseModel):
             name=self.name,
             description=self.description,
             image_url=str(image_urls[0]) if len(image_urls) > 0 else None,
-            prices=[
-                offer.to_price()
-                for offer in to_list(self.offers)
-            ],
+            prices=self.prices
         )
