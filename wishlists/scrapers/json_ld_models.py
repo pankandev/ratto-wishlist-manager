@@ -140,7 +140,7 @@ class ProductLD(BaseModel):
         image_urls: list[HttpUrl] = to_list(self.image)
 
         return ParsedProduct(
-            name=self.name,
+            name=self.name.replace('&quot;', '').replace('&lt;', ''),
             description=self.description,
             image_url=str(image_urls[0]) if len(image_urls) > 0 else None,
             prices=self.prices

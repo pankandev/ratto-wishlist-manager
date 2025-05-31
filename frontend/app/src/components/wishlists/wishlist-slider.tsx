@@ -32,7 +32,7 @@ const WishlistSlider = ({wishlist, mutateWishlists}: { wishlist: Wishlist, mutat
                         <X></X>
                     </Button>
                 </div>
-                <div className="flex flex-row w-full min-h-[16rem] overflow-x-auto items-stretch py-2 gap-6">
+                <div className="flex flex-row w-full min-h-[21rem] overflow-x-auto items-stretch py-2 gap-6">
                     {wishlist.products.map(product => <ProductCard key={product.id} product={product}
                                                                    mutateProducts={mutateWishlists}/>)}
                     {wishlist.products.length === 0 && (
