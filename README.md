@@ -21,7 +21,7 @@ A web application that allows users to create and manage wishlists by simply add
 - **Database**: SQLite
 - **Authentication**: JWT-based authentication
 
-## Development 
+## Run Development Servers
 
 ### Prerequisites
 - Python 3.13+
