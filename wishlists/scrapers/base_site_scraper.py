@@ -27,7 +27,7 @@ class BaseSiteScraper(abc.ABC):
     To create a custom scraper:
     1. Inherit this class in a Python script or package inside the `/custom_scrapers` directory at the root of this project
     2. Implement the required `scrape()` method
-    3. Define the `hostnames` class attribute with the domains this scraper can handle
+    3. Define the `compatible_domains` class attribute with the domains this scraper can handle
     4. Restart the server (scraper discovery is done once on server startup for performance)
 
     Example:
