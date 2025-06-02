@@ -79,6 +79,6 @@ done by creating a Python class inside the `custom_scrapers` directory that inhe
 
 The API endpoints are available at `/api/v1/` and include:
 
-- `/api/v1/auth/` - Account management.
+- `/api/v1/accounts/` - Account management.
 - `/api/v1/wishlists/` - Wishlist management.
 - `/api/v1/products/` - Product management.
